@@ -88,6 +88,14 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe('not found')
         })
     })
+    test('GET 400: Returns a bad request error when passed an invalid id',() => {
+        return request(app)
+        .get('/api/articles/invalidID')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
 })
 describe('GET: /api/articles', () => {
     test('GET 200: should respond with an array of article objects, each with the correct properties and data types for each property', () => {
@@ -114,7 +122,60 @@ describe('GET: /api/articles', () => {
         .get('/api/articles')
         .expect(200)
         .then(({body}) => {
-            expect(body).toBeSortedBy("created_at", {descending: true}, {coerce: true})
+            body.forEach((article) => {
+                const regex = /[^0-9]/g
+                const stringCreated = article.created_at.replace(regex, "")
+                article.created_at = stringCreated
+            })
+            expect(body).toBeSortedBy('created_at', {descending: true})
+        })
+    })
+})
+describe('GET: /api/articles/:article_id/comments',() => {
+    test('GET 200: Returns an array of comment objects with the correct properties', () => {
+        return request(app)
+        .get('/api/articles/5/comments')
+        .expect(200)
+        .then(({body}) => {
+            body.forEach((comment) => {
+                expect.objectContaining({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    article_id: expect.any(Number),
+                    created_at: expect.any(String),
+                })
+            })
+        })
+    })
+    test('GET 200: Returns comments in ascending order (most recent first)', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            body.forEach((comment) => {
+                const regex = /[^0-9]/g
+                const stringCreated = comment.created_at.replace(regex, "")
+                comment.created_at = stringCreated
+            })
+            expect(body).toBeSortedBy('created_at')
+        })
+    })
+    test('GET 404: Returns a not found error when passed a valid but non-existent id',() => {
+        return request(app)
+        .get('/api/articles/999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+        })
+    })
+    test('GET 400: Returns a bad request error when passed an invalid id',() => {
+        return request(app)
+        .get('/api/articles/invalidID/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
         })
     })
 })
