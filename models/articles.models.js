@@ -1,5 +1,37 @@
 const db = require('../db/connection')
+const articles = require('../db/data/test-data/articles')
+const comments = require('../db/data/test-data/comments')
 
+
+exports.fetchAllArticles = () => {
+    const articles = db.query(
+        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+        FROM articles
+        ORDER BY created_at DESC`)
+        .then(({rows}) => {
+            return rows
+        })
+    const comments = db.query(
+        'SELECT comments.article_id FROM comments')
+        .then(({rows}) => {
+            return rows
+        }) 
+    return Promise.all([articles, comments])
+    .then(([articles, comments]) => {
+        const articlesWithCommentCount = articles.map((article) => {
+            let commentCount = 0
+            comments.forEach((comment) => {
+                if(comment.article_id === article.article_id)
+                    commentCount++
+            })
+            article.comment_count = commentCount
+            return article
+        })
+        return articlesWithCommentCount
+    }).catch((err) => {
+        return err
+    })
+}
 exports.fetchArticle = (articleID) => {
     return db.query(
         `SELECT * FROM articles

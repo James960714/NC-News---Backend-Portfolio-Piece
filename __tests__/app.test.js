@@ -89,3 +89,32 @@ describe('GET /api/articles/:article_id', () => {
         })
     })
 })
+describe('GET: /api/articles', () => {
+    test('GET 200: should respond with an array of article objects, each with the correct properties and data types for each property', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            const articles = body
+            articles.forEach((article) => {
+                expect(typeof article.article_id).toBe('number')
+                expect(typeof article.author).toBe('string')
+                expect(typeof article.title).toBe('string')
+                expect(typeof article.topic).toBe('string')
+                expect(typeof article.created_at).toBe('string')
+                expect(typeof article.votes).toBe('number')
+                expect(typeof article.article_img_url).toBe('string')
+                expect(typeof article.comment_count).toBe('number')
+                expect(article.body).toBe(undefined)
+            })
+        })
+    })
+    test('GET 200: Articles should be sorted by descending date order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toBeSortedBy("created_at", {descending: true}, {coerce: true})
+        })
+    })
+})
