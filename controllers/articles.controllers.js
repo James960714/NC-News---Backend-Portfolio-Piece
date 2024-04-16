@@ -5,6 +5,9 @@ exports.getAllArticles = (req, res, next) => {
     .then((response) => {
         res.status(200).send(response)
     })
+    .catch((err) => {
+        next(err)
+    })
 }
 exports.getArticle = (req, res, next) => {
     const articleID = req.params.article_id
