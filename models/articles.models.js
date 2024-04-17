@@ -49,3 +49,9 @@ exports.checkArticleExists = (articleID) => {
         }
     })
 }
+// exports.updateArticleVotes = (articleID, incrementValue) => {
+//     return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [incrementValue, articleID])
+//     .then(({rows}) => {
+//         return rows
+//     })   
+// }

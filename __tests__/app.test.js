@@ -5,6 +5,8 @@ const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const endpoints = require('../endpoints.json')
 const {convertTimestampToDate, createRef, formatComments} = require('../db/seeds/utils')
+const { fetchArticle } = require('../models/articles.models')
+
 
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
@@ -179,3 +181,103 @@ describe('GET: /api/articles/:article_id/comments',() => {
         })
     })
 })
+describe('POST: /api/articles/:article_id/comments', () => {
+    test('POST 201: Adds the correct property and body to the comments database', () => {
+        const commentBody = {
+            username: "butter_bridge",
+            body: "what an article! I sure hope this text is the correct data type and my comment will be seen"
+        }
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(commentBody)
+        .expect(201)
+        .then(({body}) => {
+            const comment = body
+            expect(comment.author).toBe(commentBody.username)
+            expect(comment.body)
+        })
+    })
+    test('POST 201: Returns an object with all the correct properties and data types', () => {
+        const commentBody = {
+            username: "butter_bridge",
+            body: "what an article! I sure hope this text is the correct data type and my comment will be seen"
+        }
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(commentBody)
+        .expect(201)
+        .then(({body}) => {
+            expect.objectContaining({
+                comment_id: expect.any(Number),
+                body: expect.any(String),
+                votes: expect.any(Number),
+                author: expect.any(String),
+                article_id: expect.any(Number),
+                created_at: expect.any(String),
+            
+            })
+        })
+    })
+    test('POST 404: Returns not found when passed a valid but non-existent id', () => {
+        const commentBody = {
+            username: "butter_bridge",
+            body: "what an article! I sure hope this text is the correct data type and my comment will be seen"
+        }
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send(commentBody)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+        })
+    })
+    test('POST 400: Returns bad request when passed an invalid id', () => {
+        const commentBody = {
+            username: "butter_bridge",
+            body: "what an article! I sure hope this text is the correct data type and my comment will be seen"
+        }
+        return request(app)
+        .post('/api/articles/invalidID/comments')
+        .send(commentBody)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('POST 404: Returns not found when passed a valid but non-existent username', () => {
+        const commentBody = {
+            username: "northcoder1",
+            body: "what an article! I sure hope this text is the correct data type and my comment will be seen"
+        }
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(commentBody)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+        })
+    })
+})
+// describe('PATCH: /api/articles/:article_id', () => {
+//     test('PATCH 200: updates an aticle with a new vote count based a positive incrementation from the body of the request', () => {
+//         const voteIncrement = {inc_votes: 100 }
+//         const exampleArticle =   {
+//             title: "Living in the shadow of a great man",
+//             topic: "mitch",
+//             author: "butter_bridge",
+//             body: "I find this existence challenging",
+//             created_at: 1594329060000,
+//             votes: 100,
+//             article_img_url:
+//               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+//           }
+//         return request(app)
+//         .patch('/api/articles/1')
+//         .send(voteIncrement)
+//         .expect(200)
+//         .then(({body}) => {
+//             const newVoteCount = exampleArticle.votes + 100
+//             expect(body.votes).toEqual((newVoteCount))
+//         })
+//     })
+// })
