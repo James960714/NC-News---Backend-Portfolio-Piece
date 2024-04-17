@@ -1,7 +1,4 @@
 const db = require('../db/connection')
-const articles = require('../db/data/test-data/articles')
-const comments = require('../db/data/test-data/comments')
-
 
 exports.fetchAllArticles = () => {
     const articles = db.query(
