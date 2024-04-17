@@ -49,9 +49,12 @@ exports.checkArticleExists = (articleID) => {
         }
     })
 }
-// exports.updateArticleVotes = (articleID, incrementValue) => {
-//     return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [incrementValue, articleID])
-//     .then(({rows}) => {
-//         return rows
-//     })   
-// }
+exports.updateArticleVotes = (articleID, incrementValue) => {
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [incrementValue, articleID])
+    .then(({rows}) => {
+        if(rows.length === 0){
+            return Promise.reject({status: 404, msg: 'not found'})
+        }
+        return rows
+    })
+}

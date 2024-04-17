@@ -258,26 +258,108 @@ describe('POST: /api/articles/:article_id/comments', () => {
         })
     })
 })
-// describe('PATCH: /api/articles/:article_id', () => {
-//     test('PATCH 200: updates an aticle with a new vote count based a positive incrementation from the body of the request', () => {
-//         const voteIncrement = {inc_votes: 100 }
-//         const exampleArticle =   {
-//             title: "Living in the shadow of a great man",
-//             topic: "mitch",
-//             author: "butter_bridge",
-//             body: "I find this existence challenging",
-//             created_at: 1594329060000,
-//             votes: 100,
-//             article_img_url:
-//               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-//           }
-//         return request(app)
-//         .patch('/api/articles/1')
-//         .send(voteIncrement)
-//         .expect(200)
-//         .then(({body}) => {
-//             const newVoteCount = exampleArticle.votes + 100
-//             expect(body.votes).toEqual((newVoteCount))
-//         })
-//     })
-// })
+describe('PATCH: /api/articles/:article_id', () => {
+    test('PATCH 200: updates an aticle with a new vote count based a positive incrementation from the body of the request', () => {
+        const voteIncrement = {inc_votes: 100 }
+        const exampleArticle =   {
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: 1594329060000,
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(voteIncrement)
+        .expect(200)
+        .then(({body}) => {
+            const newVoteCount = exampleArticle.votes + 100
+            expect(body.votes).toEqual((newVoteCount))
+        })
+    })
+    test('PATCH 200: updates an aticle with a new vote count based negative incrementation from the body of the request', () => {
+        const voteIncrement = {inc_votes: -100 }
+        const exampleArticle =   {
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: 1594329060000,
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(voteIncrement)
+        .expect(200)
+        .then(({body}) => {
+            const newVoteCount = exampleArticle.votes - 100
+            expect(body.votes).toEqual((newVoteCount))
+        })
+    })
+    test('POST 404: Returns not found when passed a valid but non-existent id', () => {
+        const voteIncrement = {inc_votes: -100 }
+        const exampleArticle =   {
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: 1594329060000,
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          }
+        return request(app)
+        .patch('/api/articles/999')
+        .send(voteIncrement)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+    })
+    })
+    test('POST 400: Returns not found when passed an invalid id', () => {
+        const voteIncrement = {inc_votes: -100 }
+        const exampleArticle =   {
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: 1594329060000,
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          }
+        return request(app)
+        .patch('/api/articles/not_validID')
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+    })
+    })
+    test('POST 400: Returns vote count outside of vote property parametres', () => {
+        const voteIncrement = {inc_votes: 10000000 }
+        const exampleArticle =   {
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: 1594329060000,
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          }
+        return request(app)
+        .patch('/api/articles/not_validID')
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+    })
+    })
+
+})
