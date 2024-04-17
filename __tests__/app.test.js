@@ -361,5 +361,38 @@ describe('PATCH: /api/articles/:article_id', () => {
             expect(body.msg).toBe('bad request')
     })
     })
-
+})
+describe('DELETE: /api/comments/:comment_id', () => {
+    test('DELETE 200:removes comment given valid comment_id', () => {
+        const deletedComment = {
+            comment_id: 6,
+            body: "I hate streaming eyes even more",
+            votes: 0,
+            author: "icellusedkars",
+            article_id: 1,
+            created_at: '2020-04-11T21:02:00.000Z',
+          }
+        return request(app)
+        .delete('/api/comments/6')
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toEqual(deletedComment)
+        })
+    })
+    test('DELETE 404: returns not found error for non existent valid ID', () => {
+        return request(app)
+        .delete('/api/comments/600')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+        })
+    })
+    test('DELETE 400: returns bad request error for invalid id', () => {
+        return request(app)
+        .delete('/api/comments/invalidID')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
 })
