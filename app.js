@@ -1,10 +1,11 @@
 const express = require('express')
 const app = express()
 const {getAllTopics} = require('./controllers/topics.controllers')
-const {getAllArticles, getArticle} = require('./controllers/articles.controllers')
-const {getArticleComments} =require('./controllers/comments.controllers')
+const {getAllArticles, getArticle, patchAnArticle} = require('./controllers/articles.controllers')
+const {getArticleComments, postAComment} =require('./controllers/comments.controllers')
 const endPoints = require('./endpoints.json')
 
+app.use(express.json())
 
 app.get('/api', (req, res, next) => {
     res.status(200).send(endPoints)
@@ -17,6 +18,10 @@ app.get('/api/articles', getAllArticles)
 app.get('/api/articles/:article_id', getArticle)
 
 app.get('/api/articles/:article_id/comments', getArticleComments)
+
+app.post('/api/articles/:article_id/comments', postAComment)
+
+// app.patch('/api/articles/:article_id', patchAnArticle)
 
 app.use((err, req, res, next) => {
     if(err.code === '22P02'){
