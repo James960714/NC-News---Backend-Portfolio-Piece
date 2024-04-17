@@ -8,3 +8,13 @@ exports.checkUserExists = (username) => {
         }
     })
 }
+
+exports.fetchAllUsers = () => {
+    return db.query(`SELECT * FROM users`)
+    .then(({rows}) => {
+        return rows
+    })
+    .catch((err) => {
+        return err
+    })
+}

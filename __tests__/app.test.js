@@ -396,3 +396,21 @@ describe('DELETE: /api/comments/:comment_id', () => {
         })
     })
 })
+describe('GET: /api/users', () => {
+    test('GET 200: should respond with an array of user objects, each with the correct properties and data types for each property', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) => {
+            const users = body
+            expect(users.length).toEqual(4)
+            users.forEach((user) => {
+                expect.objectContaining({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+        })
+    })
+})

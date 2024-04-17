@@ -3,6 +3,7 @@ const app = express()
 const {getAllTopics} = require('./controllers/topics.controllers')
 const {getAllArticles, getArticle, patchAnArticle} = require('./controllers/articles.controllers')
 const {getArticleComments, postAComment, deleteArticleComment} =require('./controllers/comments.controllers')
+const {getAllUsers} = require('./controllers/users.controllers')
 const endPoints = require('./endpoints.json')
 
 app.use(express.json())
@@ -24,6 +25,9 @@ app.post('/api/articles/:article_id/comments', postAComment)
 app.patch('/api/articles/:article_id', patchAnArticle)
 
 app.delete('/api/comments/:comment_id', deleteArticleComment)
+
+app.get('/api/users', getAllUsers)
+
 
 app.use((err, req, res, next) => {
     if(err.code === '22P02'){
