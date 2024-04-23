@@ -1,10 +1,15 @@
 const db = require('../db/connection')
 
-exports.fetchAllArticles = () => {
-    const articles = db.query(
-        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-        FROM articles
-        ORDER BY created_at DESC`)
+exports.fetchAllArticles = (topicVal) => {
+    let sqlString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url FROM articles `
+    const queryVals = []
+    if(topicVal){
+        sqlString += `WHERE topic=$1 `
+        queryVals.push(topicVal)
+    }
+
+    sqlString += `ORDER BY created_at DESC`
+    const articles = db.query(sqlString, queryVals)
         .then(({rows}) => {
             return rows
         })

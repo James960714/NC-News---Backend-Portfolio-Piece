@@ -1,7 +1,8 @@
 const {fetchArticle, fetchAllArticles, updateArticleVotes, checkArticleExists} = require('../models/articles.models')
 
 exports.getAllArticles = (req, res, next) => {
-    fetchAllArticles()
+    const {topic} = req.query
+    fetchAllArticles(topic)
     .then((response) => {
         res.status(200).send(response)
     })
@@ -10,8 +11,8 @@ exports.getAllArticles = (req, res, next) => {
     })
 }
 exports.getArticle = (req, res, next) => {
-    const articleID = req.params.article_id
-    fetchArticle(articleID)
+    const {article_id} = req.params
+    fetchArticle(article_id)
     .then((article) => {
         res.status(200).send(article)
     })
