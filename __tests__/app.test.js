@@ -414,3 +414,19 @@ describe('GET: /api/users', () => {
         })
     })
 })
+describe('GET /api/articles/topics?queries', () => {
+    test('GET 200: returns an array of article objects filtered by topic value from the query', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({body}) => {
+            const articles = body
+            expect(articles.length).toBe(12)
+            body.forEach((article) => {
+                expect(article.topic).toBe('mitch')
+            })
+        })
+    })
+})
+
+// got to where you were passing the topic values i.e. number in array of articles instead of the topic name i.e. mitch. Use console.log to see all this.
