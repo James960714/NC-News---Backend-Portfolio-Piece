@@ -46,17 +46,31 @@
   "GET /api/articles/:id/comments": {
     "description": "returns an array of comments for the given article ID. The comments will be delivered in order of newest comment to the oldest",
     "queries": [],
-    "exampleResponse": {
-      "comments":   {
-        "comment_id": 5,
-        "body": "I hate streaming noses",
-        "article_id": 1,
-        "author": "icellusedkars",
-        "votes": 0,
-        "created_at": "2020-11-03T21:00:00.000Z"
+    "exampleResponse": 
+    [
+      {
+        "comments":   {
+          "comment_id": 5,
+          "body": "I hate streaming noses",
+          "article_id": 1,
+          "author": "icellusedkars",
+          "votes": 0,
+          "created_at": "2020-11-03T21:00:00.000Z"
+        }
+      },
+      {
+        "comments":   {
+          "comment_id": 5,
+          "body": "I hate streaming noses",
+          "article_id": 1,
+          "author": "icellusedkars",
+          "votes": 0,
+          "created_at": "2020-11-03T21:00:00.000Z"
+        }
       }
-    }
+    ]
   },
+        
   "POST /api/articles/:id/comments": {
     "description": "returns an object with the newly posted comment",
     "queries": [],

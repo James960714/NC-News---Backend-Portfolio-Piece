@@ -16,6 +16,7 @@ exports.getArticleComments = (req, res, next) => {
 exports.postAComment = (req, res, next) => {
     const {article_id} = req.params
     const {body} = req
+
     Promise.all([createNewComment(article_id, body), checkUserExists(body.username), checkArticleExists(article_id)])
     .then(([postedComment]) => {
         res.status(201).send(postedComment)

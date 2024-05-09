@@ -2,9 +2,10 @@ const {fetchArticle, fetchAllArticles, updateArticleVotes, checkArticleExists} =
 
 exports.getAllArticles = (req, res, next) => {
     const {topic} = req.query
+    
     fetchAllArticles(topic)
-    .then((response) => {
-        res.status(200).send(response)
+    .then((articles) => {
+        res.status(200).send({articles: articles})
     })
     .catch((err) => {
         next(err)

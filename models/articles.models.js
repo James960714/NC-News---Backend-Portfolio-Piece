@@ -1,51 +1,43 @@
 const db = require('../db/connection')
 
 exports.fetchAllArticles = (topicVal) => {
-    let sqlString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url FROM articles `
+    let sqlString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(articles.article_id) AS comment_count 
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id `
     const queryVals = []
     if(topicVal){
         sqlString += `WHERE topic=$1 `
         queryVals.push(topicVal)
     }
-
-    sqlString += `ORDER BY created_at DESC`
-    const articles = db.query(sqlString, queryVals)
-        .then(({rows}) => {
-            return rows
+    sqlString += `GROUP BY articles.article_id ORDER BY created_at DESC`
+    
+    return db.query(sqlString, queryVals)
+    .then(({rows}) => {
+        rows.forEach((row) => {
+            row.comment_count = Number(row.comment_count)  
         })
-    const comments = db.query(
-        'SELECT comments.article_id FROM comments')
-        .then(({rows}) => {
-            return rows
-        }) 
-    return Promise.all([articles, comments])
-    .then(([articles, comments]) => {
-        const articlesWithCommentCount = articles.map((article) => {
-            let commentCount = 0
-            comments.forEach((comment) => {
-                if(comment.article_id === article.article_id)
-                    commentCount++
-            })
-            article.comment_count = commentCount
-            return article
-        })
-        return articlesWithCommentCount
-    }).catch((err) => {
-        return err
+        return (rows)
+    })
+    .catch((err)=> {
+        return (err)
     })
 }
+
 exports.fetchArticle = (articleID) => {
     return db.query(
-        `SELECT * FROM articles
-        WHERE article_id=$1;`,[articleID])
+        `SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(articles.article_id) AS comment_count 
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
+        WHERE articles.article_id=$1
+        GROUP BY articles.article_id;`,[articleID])
         .then(({rows}) => {
             if(rows.length === 0){
                 return Promise.reject(({status: 404, msg: 'not found'}))
             }
             return rows[0]
-        })
-        
+        })      
 }
+
 exports.checkArticleExists = (articleID) => {
     return db.query(`SELECT * FROM articles WHERE article_id=$1`, [articleID])
     .then(({rows}) => {

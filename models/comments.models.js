@@ -7,6 +7,10 @@ exports.fetchArticleComments = (articleID) => {
     })
 }
 exports.createNewComment = (articleID, body) => {
+    if(!body.username || !body.body){
+        return Promise.reject({status: 400, msg: 'bad request'})
+    }
+
     return db.query(
         `INSERT INTO comments (article_id, author, body) 
         VALUES ($1, $2, $3) RETURNING *`,[articleID, body.username, body.body])

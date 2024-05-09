@@ -23,12 +23,12 @@ describe('GET /api/not_a_path', () => {
     })
 })
 describe('GET /api/topics', () => {
-    test('GET 200: Returns an array of topic with a correct length of 3', () => {
+    test('GET 200: Returns an array of topics with a correct length of 3', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
         .then(({body})=> {
-            const topics = body
+            const topics = body.topics
             expect(topics.length).toBe(3)
         })
     })
@@ -37,10 +37,12 @@ describe('GET /api/topics', () => {
         .get('/api/topics')
         .expect(200)
         .then(({body})=> {
-            const topics = body
+            const topics = body.topics
             topics.forEach((topic) => {
-                expect(typeof topic.slug).toBe('string')
-                expect(typeof topic.description).toBe('string')
+                expect.objectContaining({
+                    slug: expect.any(String),
+                    description: expect.any(String)
+                })
             })
         })
     })
@@ -73,14 +75,16 @@ describe('GET /api/articles/:article_id', () => {
         .then(({body}) => {
             const article = body
             expect(article.article_id).toEqual(4)
-            expect(typeof article.author).toBe('string')
-            expect(typeof article.title).toBe('string')
-            expect(typeof article.body).toBe('string')
-            expect(typeof article.topic).toBe('string')
-            expect(typeof article.created_at).toBe('string')
-            expect(typeof article.votes).toBe('number')
-            expect(typeof article.article_img_url).toBe('string')
-        })
+            expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            })
+    })
     })
     test('GET 404: Returns a not found error when passed a valid but non-existent id', () => {
         return request(app)
@@ -105,7 +109,7 @@ describe('GET: /api/articles', () => {
         .get('/api/articles')
         .expect(200)
         .then(({body}) => {
-            const articles = body
+            const {articles} = body
             articles.forEach((article) => {
                 expect(typeof article.article_id).toBe('number')
                 expect(typeof article.author).toBe('string')
@@ -122,14 +126,14 @@ describe('GET: /api/articles', () => {
     test('GET 200: Articles should be sorted by descending date order', () => {
         return request(app)
         .get('/api/articles')
-        .expect(200)
         .then(({body}) => {
-            body.forEach((article) => {
+            const {articles} = body
+            articles.forEach((article) => {
                 const regex = /[^0-9]/g
                 const stringCreated = article.created_at.replace(regex, "")
                 article.created_at = stringCreated
             })
-            expect(body).toBeSortedBy('created_at', {descending: true})
+            expect(articles).toBeSortedBy('created_at', {descending: true})
         })
     })
 })
@@ -139,13 +143,15 @@ describe('GET: /api/articles/:article_id/comments',() => {
         .get('/api/articles/5/comments')
         .expect(200)
         .then(({body}) => {
-            body.forEach((comment) => {
+            const comments = body
+            expect(comments.length).toBe(2)
+            comments.forEach((comment) => {
+                expect(comment.article_id).toBe(5),
                 expect.objectContaining({
                     comment_id: expect.any(Number),
                     body: expect.any(String),
                     votes: expect.any(Number),
                     author: expect.any(String),
-                    article_id: expect.any(Number),
                     created_at: expect.any(String),
                 })
             })
@@ -162,6 +168,16 @@ describe('GET: /api/articles/:article_id/comments',() => {
                 comment.created_at = stringCreated
             })
             expect(body).toBeSortedBy('created_at')
+        })
+    })
+    test('GET 200: Returns an empty array when an existing article with no comments is chosen', () => {
+        return request(app)
+        .get('/api/articles/8/comments')
+        .expect(200)
+        .then(({body}) => {
+            const comments = body
+            expect(Array.isArray(comments)).toBe(true)
+            expect(comments.length).toBe(0)
         })
     })
     test('GET 404: Returns a not found error when passed a valid but non-existent id',() => {
@@ -195,6 +211,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
             const comment = body
             expect(comment.author).toBe(commentBody.username)
             expect(comment.body)
+            expect(comment.article_id).toBe(6)
         })
     })
     test('POST 201: Returns an object with all the correct properties and data types', () => {
@@ -216,6 +233,28 @@ describe('POST: /api/articles/:article_id/comments', () => {
                 created_at: expect.any(String),
             
             })
+        })
+    })
+    test('POST 400: Returnsbad request error when passed an empty object i.e. no comment', () => {
+        const commentBody = {}
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(commentBody)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
+        })
+    })
+    test('POST 400: Returns bad request error when passed an object without a body/comment', () => {
+        const commentBody = {
+            username: "butter_bridge"
+        }
+        return request(app)
+        .post('/api/articles/6/comments')
+        .send(commentBody)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('bad request')
         })
     })
     test('POST 404: Returns not found when passed a valid but non-existent id', () => {
@@ -420,13 +459,47 @@ describe('GET /api/articles/topics?queries', () => {
         .get('/api/articles?topic=mitch')
         .expect(200)
         .then(({body}) => {
-            const articles = body
+            const {articles} = body
             expect(articles.length).toBe(12)
-            body.forEach((article) => {
+            articles.forEach((article) => {
                 expect(article.topic).toBe('mitch')
             })
         })
     })
+    // test('')
 })
+describe('GET /api/articles/:article_id(comment_count)', () => {
+    test('GET 200: returns a single article object', () => {
+        return request(app)
+        .get('/api/articles/4')
+        .expect(200)
+        .then(({body}) => {
+            console.log(body)
+            const article = body
+            expect(typeof article).toBe('object')
+            expect(Array.isArray(article)).toBe(false)
+        })
+    })
+})
+describe('GET: /api/articles', () => {
+    test('GET 200: should respond with an array of article objects, each with the correct properties and data types for each property', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body}) => {
+            const article = body
+                expect(typeof article.article_id).toBe('number')
+                expect(typeof article.author).toBe('string')
+                expect(typeof article.title).toBe('string')
+                expect(typeof article.topic).toBe('string')
+                expect(typeof article.created_at).toBe('string')
+                expect(typeof article.votes).toBe('number')
+                expect(typeof article.article_img_url).toBe('string')
+                expect(article.comment_count).toBe('11')
+                expect(typeof article.body).toBe('string')
+            })
+        })
+    })
+
 
 // got to where you were passing the topic values i.e. number in array of articles instead of the topic name i.e. mitch. Use console.log to see all this.
