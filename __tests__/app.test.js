@@ -4,8 +4,7 @@ const testData = require('../db/data/test-data/index')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const endpoints = require('../endpoints.json')
-const {convertTimestampToDate, createRef, formatComments} = require('../db/seeds/utils')
-const { fetchArticle } = require('../models/articles.models')
+
 
 
 beforeEach(() => seed(testData))
