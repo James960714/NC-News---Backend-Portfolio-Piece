@@ -69,8 +69,7 @@
         }
       }
     ]
-  },
-        
+  },      
   "POST /api/articles/:id/comments": {
     "description": "returns an object with the newly posted comment",
     "queries": [],
