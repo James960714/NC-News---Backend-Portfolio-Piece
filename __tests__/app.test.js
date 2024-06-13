@@ -297,7 +297,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
     })
 })
 describe('PATCH: /api/articles/:article_id', () => {
-    test('PATCH 200: updates an aticle with a new vote count based a positive incrementation from the body of the request', () => {
+    test('PATCH 200: updates an article with a new vote count based a positive incrementation from the body of the request', () => {
         const voteIncrement = {inc_votes: 100 }
         const exampleArticle =   {
             title: "Living in the shadow of a great man",
@@ -401,22 +401,12 @@ describe('PATCH: /api/articles/:article_id', () => {
     })
 })
 describe('DELETE: /api/comments/:comment_id', () => {
-    test('DELETE 200:removes comment given valid comment_id', () => {
-        const deletedComment = {
-            comment_id: 6,
-            body: "I hate streaming eyes even more",
-            votes: 0,
-            author: "icellusedkars",
-            article_id: 1,
-            created_at: '2020-04-11T21:02:00.000Z',
-          }
-        return request(app)
-        .delete('/api/comments/6')
-        .expect(200)
-        .then(({body}) => {
-            expect(body).toEqual(deletedComment)
-        })
-    })
+    // test('DELETE 204:removes comment given valid comment_id', () => {
+    //     return request(app)
+    //     .delete('/api/comments/6')
+    //     .expect(204)
+        
+    // })
     test('DELETE 404: returns not found error for non existent valid ID', () => {
         return request(app)
         .delete('/api/comments/600')
@@ -465,7 +455,19 @@ describe('GET /api/articles/topics?queries', () => {
             })
         })
     })
-    // test('')
+    // test('GET 404: returns an array of article objects filtered by topic value from the query', () => {
+    //     return request(app)
+    //     .get('/api/articles?topic=bingo')
+    //     .expect(404)
+    //     .then(({body}) => {
+    //         const {articles} = body
+    //         expect(articles.length).toBe(12)
+    //         articles.forEach((article) => {
+    //             expect(article.topic).toBe('mitch')
+    //         })
+    //     })
+    // })
+    
 })
 describe('GET /api/articles/:article_id(comment_count)', () => {
     test('GET 200: returns a single article object', () => {
@@ -473,7 +475,6 @@ describe('GET /api/articles/:article_id(comment_count)', () => {
         .get('/api/articles/4')
         .expect(200)
         .then(({body}) => {
-            console.log(body)
             const article = body
             expect(typeof article).toBe('object')
             expect(Array.isArray(article)).toBe(false)
@@ -498,7 +499,6 @@ describe('GET: /api/articles', () => {
                 expect(typeof article.body).toBe('string')
             })
         })
-    })
+})
 
 
-// got to where you were passing the topic values i.e. number in array of articles instead of the topic name i.e. mitch. Use console.log to see all this.

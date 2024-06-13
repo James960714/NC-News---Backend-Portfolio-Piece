@@ -87,5 +87,73 @@
         "created_at": "2020-11-03T21:00:00.000Z"
       }
     }
+  },
+  "PATCH: /api/articles/:article_id": {
+    "description": "returns an object with an updated vote count",
+    "queries": [],
+    "example PATCH body": {
+      "inc_votes": 100 },
+    "exampleResponse": {
+      "Article" : {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 200,
+        "article_img_url":
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  },
+  "DELETE: /api/comments/:comment_id": {
+    "description": "deletes a specified comment, returns nothing",
+    "queries": []
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/topics?queries": {
+    "description": "returns an array of article objects filtered by topic value from the query",
+    "queries": ["topic"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "author": "icellusedkars",
+          "title": "Am I a cat?",
+          "article_id": 11,
+          "topic": "mitch",
+          "created_at": "2020-01-15T22:21:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 1
+        },
+        {
+          "author": "icellusedkars",
+          "title": "Z",
+          "article_id": 7,
+          "topic": "mitch",
+          "created_at": "2020-01-07T14:08:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 1
+        }
+      ]
+    }
   }
 }
