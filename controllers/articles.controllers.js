@@ -3,13 +3,23 @@ const { checkTopicExists } = require('../models/topics.models')
 
 exports.getAllArticles = (req, res, next) => {
     const {topic} = req.query
-    Promise.all([checkTopicExists(topic), fetchAllArticles(topic)])
-    .then(([,articles]) => {
-        res.status(200).send({articles: articles})
-    })
-    .catch((err) => {
-        next(err)
-    })
+    if(topic === undefined){
+        fetchAllArticles()
+        .then((articles) => {
+            res.status(200).send({articles: articles})
+        })
+        .catch((err) => {
+            next(err)
+        })
+    }else{
+        Promise.all([checkTopicExists(topic), fetchAllArticles(topic)])
+          .then(([,articles]) => {
+            res.status(200).send({articles: articles})
+        })
+        .catch((err) => {
+            next(err)
+        })
+    }
 }
 exports.getArticle = (req, res, next) => {
     const {article_id} = req.params
@@ -25,7 +35,6 @@ exports.getArticle = (req, res, next) => {
 exports.patchAnArticle = (req, res, next) => {
     const {article_id} = req.params
     const {inc_votes} = req.body
-    console.log(req.body)
     updateArticleVotes(article_id, inc_votes)
     .then(([updatedArticle]) => {
         res.status(200).send(updatedArticle)

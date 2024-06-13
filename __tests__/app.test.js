@@ -401,12 +401,11 @@ describe('PATCH: /api/articles/:article_id', () => {
     })
 })
 describe('DELETE: /api/comments/:comment_id', () => {
-    // test('DELETE 204:removes comment given valid comment_id', () => {
-    //     return request(app)
-    //     .delete('/api/comments/6')
-    //     .expect(204)
-        
-    // })
+    test('DELETE 204:removes comment given valid comment_id', () => {
+        return request(app)
+        .delete('/api/comments/6')
+        .expect(204)   
+    })
     test('DELETE 404: returns not found error for non existent valid ID', () => {
         return request(app)
         .delete('/api/comments/600')
@@ -473,7 +472,6 @@ describe('GET /api/articles/topics?queries', () => {
         })
     })
 })
-
 describe('GET /api/articles/:article_id(comment_count)', () => {
     test('GET 200: returns a single article object', () => {
         return request(app)
@@ -485,7 +483,26 @@ describe('GET /api/articles/:article_id(comment_count)', () => {
             expect(Array.isArray(article)).toBe(false)
         })
     })
-    test.only('GET 404: returns not found when passed a valid but non-existent article_id', () => {
+    test('GET 200: Returns single article with correct properties(i.e. now includes comment_count', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)    
+        .then(({body}) => {
+            const article = body
+            expect(article.article_id).toEqual(1)
+            expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String), 
+                comment_count: expect.any(Number)    
+            })
+        })
+    })    
+    test('GET 404: returns not found when passed a valid but non-existent article_id', () => {
         return request(app)
         .get('/api/articles/10000')
         .expect(404)
@@ -493,26 +510,7 @@ describe('GET /api/articles/:article_id(comment_count)', () => {
             expect(body.msg).toBe('not found')
         })
     })
-    
 })
-describe('GET: /api/articles', () => {
-    test('GET 200: should respond with an array of article objects, each with the correct properties and data types for each property', () => {
-        return request(app)
-        .get('/api/articles/1')
-        .expect(200)
-        .then(({body}) => {
-            const article = body
-                expect(typeof article.article_id).toBe('number')
-                expect(typeof article.author).toBe('string')
-                expect(typeof article.title).toBe('string')
-                expect(typeof article.topic).toBe('string')
-                expect(typeof article.created_at).toBe('string')
-                expect(typeof article.votes).toBe('number')
-                expect(typeof article.article_img_url).toBe('string')
-                expect(article.comment_count).toBe('11')
-                expect(typeof article.body).toBe('string')
-            })
-        })
-})
+
 
 
