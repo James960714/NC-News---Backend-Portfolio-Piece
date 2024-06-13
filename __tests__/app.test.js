@@ -465,8 +465,25 @@ describe('GET /api/articles/topics?queries', () => {
             })
         })
     })
-    // test('')
+    test('GET 200: returns an empty array when passed a topic that exists but has not articles', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({body}) => {
+            const {articles} = body
+            expect(articles.length).toBe(0)
+        })
+    })
+    test('GET 404: not found when passed a non-existent topic value', () => {
+        return request(app)
+        .get('/api/articles?topic=non_existent_topic')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("not found")
+        })
+    })
 })
+
 describe('GET /api/articles/:article_id(comment_count)', () => {
     test('GET 200: returns a single article object', () => {
         return request(app)
@@ -479,6 +496,15 @@ describe('GET /api/articles/:article_id(comment_count)', () => {
             expect(Array.isArray(article)).toBe(false)
         })
     })
+    test.only('GET 404: returns not found when passed a valid but non-existent article_id', () => {
+        return request(app)
+        .get('/api/articles/10000')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('not found')
+        })
+    })
+    
 })
 describe('GET: /api/articles', () => {
     test('GET 200: should respond with an array of article objects, each with the correct properties and data types for each property', () => {
