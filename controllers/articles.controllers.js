@@ -1,10 +1,10 @@
-const {fetchArticle, fetchAllArticles, updateArticleVotes, checkArticleExists} = require('../models/articles.models')
+const {fetchArticle, fetchAllArticles, updateArticleVotes} = require('../models/articles.models')
+const { checkTopicExists } = require('../models/topics.models')
 
 exports.getAllArticles = (req, res, next) => {
     const {topic} = req.query
-    
-    fetchAllArticles(topic)
-    .then((articles) => {
+    Promise.all([checkTopicExists(topic), fetchAllArticles(topic)])
+    .then(([,articles]) => {
         res.status(200).send({articles: articles})
     })
     .catch((err) => {
