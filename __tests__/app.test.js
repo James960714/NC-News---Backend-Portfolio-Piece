@@ -463,7 +463,7 @@ describe('GET /api/articles/topics?queries', () => {
             expect(articles.length).toBe(0)
         })
     })
-    test.only('GET 404: not found when passed a non-existent topic value', () => {
+    test('GET 404: not found when passed a non-existent topic value', () => {
         return request(app)
         .get('/api/articles?topic=non_existent_topic')
         .expect(404)

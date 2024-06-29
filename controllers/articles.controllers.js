@@ -13,7 +13,7 @@ exports.getAllArticles = (req, res, next) => {
         })
     }else{
         Promise.all([checkTopicExists(topic), fetchAllArticles(topic)])
-        .then(([,articles]) => {
+          .then(([,articles]) => {
             res.status(200).send({articles: articles})
         })
         .catch((err) => {
