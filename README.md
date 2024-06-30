@@ -75,12 +75,20 @@ As a minimum you will need Node.js v21.7.1 for this project.
    **Development Data**
    If you wish to use the development data run the command: npm run seed
 
-
-
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
-
    **Test data**:
    When running the tests the test data base is seeded before each test; so runnign the following command will seed the data for each test:
    npm run test. 
 
     Both sets of data can be seen in full in BE-NC-NEWS/db/data
+
+
+
+
+
+
+
+This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+
+
+
+
